@@ -45,7 +45,7 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
     if user and user.check_password(data['password']):
-        return jsonify({'message': 'Login successful'}), 200
+        return jsonify({'message': 'Login successful', 'user_id': user.id}), 200
     return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/api/trips', methods=['GET'])
@@ -64,36 +64,52 @@ def get_trips():
 @app.route('/log_trip', methods=['POST'])
 def log_trip():
     data = request.get_json()
+    user_id = data.get('user_id')
     mode = data.get('mode')
     distance = data.get('distance')
     duration = data.get('duration')
-    
+
+    # Log received data for debugging
+    app.logger.debug(f"Received data: {data}")
+
+    if not user_id:
+        return jsonify({'message': 'user_id is required'}), 400
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
     if mode and distance and duration:
         try:
             distance = float(distance)
             duration = float(duration)
             carbon_footprint = calculate_carbon_footprint(mode, distance)
-        except ValueError:
+        except ValueError as e:
+            app.logger.error(f"Value error: {e}")
             return jsonify({'message': 'Invalid data format'}), 400
 
         trip = Trip(
             mode=mode,
             distance=distance,
             duration=duration,
-            carbon_footprint=carbon_footprint
+            carbon_footprint=carbon_footprint,
+            user_id=user.id
         )
         db.session.add(trip)
         db.session.commit()
         return jsonify({'message': 'Trip logged successfully'}), 201
     else:
-        return jsonify({'message': 'Missing required data for logging trip'}), 400
+        missing_fields = [field for field in ['mode', 'distance', 'duration'] if not data.get(field)]
+        app.logger.error(f"Missing required data for logging trip: {missing_fields}")
+        return jsonify({'message': 'Missing required data for logging trip', 'missing_fields': missing_fields}), 400
 
 def calculate_carbon_footprint(mode, distance):
     carbon_emission_factors = {
         'walking': 0,
         'cycling': 0,
         'public_transport': 0.05,  # example values in kg CO2e per km
-        'car': 0.24
+        'car': 0.24,
+        'train': 0.37,
     }
     return carbon_emission_factors.get(mode, 0) * distance
 
