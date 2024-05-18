@@ -1,19 +1,23 @@
 # PLP HACKATHON SOLUTION
 Eco-Friendly Transportation Tracker
-Welcome to the Eco-Friendly Transportation Tracker! This application helps you log and track your transportation activities with an emphasis on reducing your carbon footprint. Our goal is to promote eco-friendly transportation options and provide users with insights into their carbon emissions, fostering a community of environmentally conscious individuals.
+Welcome to E-COMMUTE! This application helps you log and track your transportation activities with an emphasis on reducing your carbon footprint. Our goal is to promote eco-friendly transportation options and provide users with insights into their carbon emissions, fostering a community of environmentally conscious individuals.
 
 # Features
 ## Core Features
 User Authentication: Secure registration and login system. Trip Logging: Easily log trips with details like mode of transportation, distance, and duration. Dashboard: View a comprehensive log of your trips with carbon footprint calculations. Trip Deletion: Delete any logged trip directly from the dashboard. Advanced Features Badges and Rewards: Earn badges for reaching milestones such as long distances or specific modes of transportation.
 
 # Getting Started
-## Prerequisites
-Node.js Python Flask
+## PrerequisiteS
+React
+Node.js
+Python 
+Flask
 
 # Installation
 Clone the repository:
 
-bash Copy code git clone https://github.com/yourusername/eco-friendly-transportation-tracker.git cd eco-friendly-transportation-tracker
+bash Copy code git clone https://github.com/Victorknows/E-Commute 
+cd eco-friendly-transportation-tracker
 
 ## Backend Setup:
 bash Copy code cd server python3 -m venv venv source venv/bin/activate # On Windows use venv\Scripts\activate pip install -r requirements.txt flask run
