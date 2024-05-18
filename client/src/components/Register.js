@@ -22,7 +22,6 @@ const Register = () => {
 
   return (
     <div>
-      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />

@@ -6,22 +6,12 @@ const Dashboard = () => {
   const [mode, setMode] = useState('');
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
-  const user_id = localStorage.getItem('user_id');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Log the data being sent
-    console.log({
-      user_id,
-      mode,
-      distance,
-      duration
-    });
-
     try {
-      await axios.post('/log_trip', { user_id, mode, distance, duration });
-      fetchLogs();
+      await axios.post('/log_trip', { mode, distance, duration });
+      fetchLogs(); // Refetch logs after logging a new trip
       setMode('');
       setDistance('');
       setDuration('');
@@ -39,13 +29,21 @@ const Dashboard = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/delete_trip/${id}`);
+      fetchLogs(); // Refetch logs after deleting a trip
+    } catch (error) {
+      console.error('Error deleting trip:', error);
+    }
+  };
+
   useEffect(() => {
     fetchLogs();
   }, []);
 
   return (
     <div>
-      <h2>Dashboard</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Mode" value={mode} onChange={(e) => setMode(e.target.value)} required />
         <input type="text" placeholder="Distance (km)" value={distance} onChange={(e) => setDistance(e.target.value)} required />
@@ -60,6 +58,7 @@ const Dashboard = () => {
             <th>Distance (km)</th>
             <th>Duration (mins)</th>
             <th>Carbon Footprint (kg CO2e)</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -70,6 +69,9 @@ const Dashboard = () => {
               <td>{log.distance}</td>
               <td>{log.duration}</td>
               <td>{log.carbon_footprint}</td>
+              <td>
+                <button onClick={() => handleDelete(log.id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>

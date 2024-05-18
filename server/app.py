@@ -45,7 +45,7 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
     if user and user.check_password(data['password']):
-        return jsonify({'message': 'Login successful', 'user_id': user.id}), 200
+        return jsonify({'message': 'Login successful'}), 200
     return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/api/trips', methods=['GET'])
@@ -69,9 +69,6 @@ def log_trip():
     distance = data.get('distance')
     duration = data.get('duration')
 
-    # Log received data for debugging
-    app.logger.debug(f"Received data: {data}")
-
     if not user_id:
         return jsonify({'message': 'user_id is required'}), 400
 
@@ -84,8 +81,7 @@ def log_trip():
             distance = float(distance)
             duration = float(duration)
             carbon_footprint = calculate_carbon_footprint(mode, distance)
-        except ValueError as e:
-            app.logger.error(f"Value error: {e}")
+        except ValueError:
             return jsonify({'message': 'Invalid data format'}), 400
 
         trip = Trip(
@@ -99,9 +95,16 @@ def log_trip():
         db.session.commit()
         return jsonify({'message': 'Trip logged successfully'}), 201
     else:
-        missing_fields = [field for field in ['mode', 'distance', 'duration'] if not data.get(field)]
-        app.logger.error(f"Missing required data for logging trip: {missing_fields}")
-        return jsonify({'message': 'Missing required data for logging trip', 'missing_fields': missing_fields}), 400
+        return jsonify({'message': 'Missing required data for logging trip'}), 400
+
+@app.route('/delete_trip/<int:trip_id>', methods=['DELETE'])
+def delete_trip(trip_id):
+    trip = Trip.query.get(trip_id)
+    if trip:
+        db.session.delete(trip)
+        db.session.commit()
+        return jsonify({'message': 'Trip deleted successfully'}), 200
+    return jsonify({'message': 'Trip not found'}), 404
 
 def calculate_carbon_footprint(mode, distance):
     carbon_emission_factors = {
