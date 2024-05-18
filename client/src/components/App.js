@@ -9,6 +9,15 @@ const App = () => {
     <Router>
       <div>
         <h1>Eco-Friendly Transportation Tracker</h1>
+        
+        <nav>
+          <ul>
+            <li><a href='/login'>Login</a></li>
+            <li><a href='/'>Signup</a></li>
+            <li><a href='/dashboard'>Dashboard</a></li>
+          </ul>
+        </nav>
+
         <Switch>
           <Route path="/" exact component={Register} />
           <Route path="/login" component={Login} />

@@ -6,14 +6,22 @@ const Dashboard = () => {
   const [mode, setMode] = useState('');
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
+  const user_id = localStorage.getItem('user_id');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Log the data being sent
+    console.log({
+      user_id,
+      mode,
+      distance,
+      duration
+    });
+
     try {
-      await axios.post('/log_trip', { mode, distance, duration });
-      // Refetch logs after logging a new trip
+      await axios.post('/log_trip', { user_id, mode, distance, duration });
       fetchLogs();
-      // Clear form fields
       setMode('');
       setDistance('');
       setDuration('');

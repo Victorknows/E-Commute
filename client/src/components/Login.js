@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('/login', { email, password });
-      // Handle successful login (e.g., store token, redirect)
-      console.log(response.data);
+      // Store user_id in local storage
+      localStorage.setItem('user_id', response.data.user_id);
       history.push('/dashboard');
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Error logging in:', error);
     }
   };
 
