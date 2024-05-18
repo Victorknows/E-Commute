@@ -9,7 +9,6 @@ const Login = ({ history }) => {
     e.preventDefault();
     try {
       const response = await axios.post('/login', { email, password });
-      // Store user_id in local storage
       localStorage.setItem('user_id', response.data.user_id);
       history.push('/dashboard');
     } catch (error) {

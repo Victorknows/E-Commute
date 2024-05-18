@@ -6,12 +6,14 @@ const Dashboard = () => {
   const [mode, setMode] = useState('');
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
+  const [monthlyTotal, setMonthlyTotal] = useState(0); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const user_id = 1; 
     try {
-      await axios.post('/log_trip', { mode, distance, duration });
-      fetchLogs(); // Refetch logs after logging a new trip
+      await axios.post('/log_trip', { user_id, mode, distance, duration });
+      fetchLogs();
       setMode('');
       setDistance('');
       setDuration('');
@@ -24,6 +26,7 @@ const Dashboard = () => {
     try {
       const response = await axios.get('/api/trips');
       setLogs(response.data);
+      calculateMonthlyTotal(response.data);
     } catch (error) {
       console.error('Error fetching logs:', error);
     }
@@ -32,10 +35,18 @@ const Dashboard = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/delete_trip/${id}`);
-      fetchLogs(); // Refetch logs after deleting a trip
+      fetchLogs(); 
     } catch (error) {
       console.error('Error deleting trip:', error);
     }
+  };
+
+  const calculateMonthlyTotal = (logs) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const monthlyLogs = logs.filter(log => new Date(log.date).getMonth() === currentMonth);
+    const total = monthlyLogs.reduce((acc, log) => acc + log.carbon_footprint, 0);
+    setMonthlyTotal(total);
   };
 
   useEffect(() => {
@@ -50,6 +61,9 @@ const Dashboard = () => {
         <input type="text" placeholder="Duration (mins)" value={duration} onChange={(e) => setDuration(e.target.value)} required />
         <button type="submit">Log Trip</button>
       </form>
+      <div>
+        <h2>Monthly Total Carbon Footprint: {monthlyTotal.toFixed(2)} kg CO2e</h2>
+      </div>
       <table>
         <thead>
           <tr>

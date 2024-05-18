@@ -8,7 +8,7 @@ const App = () => {
   return (
     <Router>
       <div>
-        <h1>Eco-Friendly Transportation Tracker</h1>
+        <h1>E-COMMUTE</h1>
         
         <nav>
           <ul>
